@@ -498,6 +498,29 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
 /* ---------- footer ---------- */
 .foot{position:relative;overflow:clip;padding:clamp(80px,12vh,140px) var(--gutter) calc(48px + env(safe-area-inset-bottom,0px))}
 .foot .wrap{position:relative;z-index:2;display:grid;gap:40px}
+.oath{--saffron:#ff9933;--india-green:#1f9d3a;display:grid;gap:clamp(18px,2.4vw,28px);padding-bottom:clamp(40px,6vw,72px);border-bottom:1px solid var(--stage-line)}
+.oath-line{font:700 clamp(1.9rem,5vw,4.4rem)/1.04 var(--sans);letter-spacing:-.04em;text-transform:uppercase;color:var(--stage-ink);max-width:18ch}
+.oath-txt b{font-weight:700;color:var(--saffron)}
+.oath-txt .wd{white-space:nowrap}
+.oath-txt .ch{display:inline-block;animation:strike .32s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes strike{from{opacity:0;transform:translateY(-.25em) scale(1.7);filter:blur(4px)}}
+.oath-caret{display:inline-block;width:.09em;height:.9em;margin-left:.06em;vertical-align:-.08em;background:var(--saffron);animation:caret .8s steps(1) infinite}
+.oath.done .oath-caret{animation:caret .8s steps(1) 3;opacity:0}
+.oath-jh{font:700 clamp(2.6rem,8vw,6.4rem)/1.2 var(--deva);letter-spacing:.01em;color:var(--stage-ink);opacity:0;transform:scale(1.9);filter:blur(10px);transform-origin:0 60%}
+.oath.done .oath-jh{animation:slam .55s cubic-bezier(.2,1.4,.3,1) forwards}
+@keyframes slam{0%{opacity:0;transform:scale(1.9);filter:blur(10px)}60%{opacity:1;transform:scale(.97);filter:blur(0)}100%{opacity:1;transform:scale(1);filter:none}}
+.oath.done{animation:shake .45s linear .42s}
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-6px,2px)}30%{transform:translate(5px,-3px)}45%{transform:translate(-4px,1px)}60%{transform:translate(3px,2px)}75%{transform:translate(-2px,-1px)}}
+.tri{display:flex;width:min(360px,70%);height:4px;gap:3px}
+.tri i{flex:1;transform:scaleX(0);transform-origin:0 50%}
+.tri i:nth-child(1){background:var(--saffron)}.tri i:nth-child(2){background:#f4f6f6}.tri i:nth-child(3){background:var(--india-green)}
+.oath.done .tri i{animation:bar .5s var(--ease) forwards}
+.oath.done .tri i:nth-child(1){animation-delay:.55s}.oath.done .tri i:nth-child(2){animation-delay:.7s}.oath.done .tri i:nth-child(3){animation-delay:.85s}
+@keyframes bar{to{transform:scaleX(1)}}
+.oath.static .oath-jh{opacity:1;transform:none;filter:none}
+.oath.static .tri i{transform:none}
+.oath.static .oath-caret{display:none}
+@media (prefers-reduced-motion: reduce){.oath-jh{opacity:1;transform:none;filter:none}.tri i{transform:none}.oath-caret{display:none}}
 .foot-deva{font:600 clamp(3.4rem,13vw,10rem)/1.05 var(--deva);letter-spacing:-.01em;color:var(--stage-ink);opacity:.92}
 .foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;padding-top:24px;border-top:1px solid var(--stage-line);color:var(--stage-ink-3);font:400 13px var(--mono)}
 .foot-row nav{display:flex;flex-wrap:wrap;gap:6px 20px}
@@ -775,6 +798,11 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
 <footer class="foot stage">
   <div class="grain" aria-hidden="true"></div>
   <div class="wrap">
+    <div class="oath" id="oath">
+      <p class="oath-line" aria-label="Ye Naya Hindustan Hai, Ye Ghar Mein Ghusega Bhi Aur Marega Bhi"><span class="oath-txt" id="oathTxt" aria-hidden="true">Ye Naya Hindustan Hai,<br>Ye <b>Ghar Mein Ghusega</b> Bhi Aur <b>Marega</b> Bhi.</span><span class="oath-caret" aria-hidden="true"></span></p>
+      <p class="oath-jh" id="oathJh" lang="hi">जय हिन्द</p>
+      <span class="tri" aria-hidden="true"><i></i><i></i><i></i></span>
+    </div>
     <p class="foot-deva" lang="hi">सुदर्शन व्यूह</p>
     <div class="foot-row">
       <span>Sudarshana Vyuha · Team ODAX</span>
@@ -1740,6 +1768,48 @@ let loading = document.documentElement.classList.contains('is-loading'), ldHold 
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
+})();
+
+/* ================= FOOTER OATH: typewriter ================= */
+(function oath() {
+  const box = $('#oath'), txt = $('#oathTxt'); if (!box) return;
+  if (reduce) { box.classList.add('static'); return; }
+  // [text, emphasised?, line break before?]
+  const parts = [['Ye Naya Hindustan Hai,', 0], ['\n', 0], ['Ye ', 0], ['Ghar Mein Ghusega', 1], [' Bhi Aur ', 0], ['Marega', 1], [' Bhi.', 0]];
+  let timer = 0, running = false;
+  const clear = () => { clearTimeout(timer); txt.replaceChildren(); box.classList.remove('done'); };
+  const line = txt.parentElement;
+  const reserve = () => { line.style.minHeight = ''; line.style.minHeight = line.offsetHeight + 'px'; };
+  reserve();   // the full line is in the page at load, so its height is the typed height
+  addEventListener('resize', () => { if (!running || box.classList.contains('done')) reserve(); });
+  function type() {
+    clear(); running = true;
+    const queue = [];
+    parts.forEach(([t, em]) => { if (t === '\n') queue.push({ br: true }); else [...t].forEach(c => queue.push({ c, em })); });
+    let i = 0, holder = txt, word = null;
+    const step = () => {
+      if (!running) return;
+      if (i >= queue.length) { timer = setTimeout(() => box.classList.add('done'), 380); return; }
+      const q = queue[i++];
+      if (q.br) { txt.appendChild(document.createElement('br')); holder = txt; word = null; timer = setTimeout(step, 260); return; }
+      if (q.em) { if (holder === txt || holder.tagName !== 'B') { holder = document.createElement('b'); txt.appendChild(holder); } }
+      else holder = txt;
+      if (q.c === ' ') { holder.appendChild(document.createTextNode(' ')); word = null; }
+      else {
+        if (!word || word.parentNode !== holder) { word = document.createElement('span'); word.className = 'wd'; holder.appendChild(word); }
+        const s = document.createElement('span'); s.className = 'ch'; s.textContent = q.c; word.appendChild(s);
+      }
+      const next = queue[i];
+      const d = q.c === ',' || q.c === '.' ? 420 : q.c === ' ' ? 70 : (q.em ? 70 : 42) + Math.random() * 30;
+      timer = setTimeout(step, next ? d : 200);
+    };
+    timer = setTimeout(step, 250);
+  }
+  new IntersectionObserver(es => {
+    const on = es[0].isIntersecting;
+    if (on && !running) type();
+    else if (!on && running) { running = false; clearTimeout(timer); }
+  }, { threshold: .25 }).observe(box);
 })();
 
 /* ================= main loop ================= */
