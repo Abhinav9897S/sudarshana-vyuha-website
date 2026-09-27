@@ -97,7 +97,7 @@ function card(r) {
   if (r.status !== 'approved') act('Approve', 'approved', 'ok');
   if (r.status === 'pending') act('Reject', 'rejected', 'bad');
   if (r.status === 'approved') {
-    const b = el('button', 'btn ghost', 'Send new link'); b.type = 'button';
+    const b = el('button', 'btn ghost', 'Issue new download'); b.type = 'button';
     b.onclick = () => sendLink(r, b); acts.append(b);
     act('Revoke access', 'revoked', 'bad');
   }
@@ -124,20 +124,21 @@ async function decide(r, status, note, btn) {
 }
 
 function linkState(t) {
-  if (!t) return 'No link sent';
-  if (t.used_at) return `Link used ${when(t.used_at)}`;
-  if (t.revoked_at) return 'Last link cancelled';
-  if (new Date(t.expires_at) <= new Date()) return `Link expired ${when(t.expires_at)}`;
-  return `Link sent ${when(t.created_at)}, unused`;
+  if (!t) return 'No download issued';
+  if (t.used_at) return `Vault opened ${when(t.used_at)}`;
+  if (t.revoked_at) return 'Last download cancelled';
+  if (new Date(t.expires_at) <= new Date()) return `Download expired ${when(t.expires_at)}`;
+  return `Download issued ${when(t.created_at)}, not yet used`;
 }
 
 async function sendLink(r, btn, justApproved) {
   btn.disabled = true; say('');
   const { data, error } = await sb.functions.invoke('send-link', { body: { request_id: r.id } });
   let problem = '';
-  if (error) { problem = 'The email couldn\'t be sent.'; try { problem = (await error.context.json()).error || problem; } catch { /* keep the default */ } }
+  if (error) { problem = 'The download couldn\'t be issued.'; try { problem = (await error.context.json()).error || problem; } catch { /* keep the default */ } }
   await load();
-  if (problem) say(`${justApproved ? r.full_name + ' is approved, but ' : ''}${problem}${justApproved ? ' Use “Send new link” once it\'s fixed.' : ''}`);
-  else say(`${justApproved ? 'Approved. ' : ''}One-time link emailed to ${data.sent_to}.`, 'ok');
+  if (problem) return say(`${justApproved ? r.full_name + ' is approved, but ' : ''}${problem}${justApproved ? ' Use “Issue new download” to try again.' : ''}`);
+  const where = data.emailed ? ` They can sign in to download, and a one-time link was emailed to ${data.sent_to}.` : ' They can sign in to the access page to download it once.';
+  say(`${justApproved ? 'Approved. ' : 'New download issued.'}${where}`, 'ok');
 }
 })();

@@ -148,6 +148,9 @@ create table if not exists public.download_tokens (
   revoked_at  timestamptz
 );
 create index if not exists download_tokens_user on public.download_tokens (user_id);
+-- Opening the vault uses a grant up and starts a short download session for the browser that opened it.
+alter table public.download_tokens add column if not exists session_hash text unique;
+alter table public.download_tokens add column if not exists session_expires timestamptz;
 alter table public.download_tokens enable row level security;
 
 drop policy if exists "reviewers read links" on public.download_tokens;

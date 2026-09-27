@@ -1,22 +1,23 @@
 // Sudarshana Vyuha · send-link
 // Called from the review page right after a reviewer approves someone (or presses
-// "Send new link"). Creates a one-time download link, retires any earlier unused
-// link for that person, and emails the new one.
+// "Issue new download"). Grants that person exactly one download, retiring any earlier
+// unused grant. They redeem it by signing in to the access page; if Brevo is set up,
+// they are also emailed a one-time link that does the same.
 //
 // Deploy with "Verify JWT" OFF: this function checks the caller itself.
 //
 // Secrets (Dashboard → Edge Functions → Secrets):
-//   BREVO_API_KEY   Brevo → SMTP & API → API keys
-//   SENDER_EMAIL    an address verified in Brevo → Senders
+//   BREVO_API_KEY   optional: Brevo → SMTP & API → API keys (without it, no email is sent)
+//   SENDER_EMAIL    optional: an address verified in Brevo → Senders
 //   SENDER_NAME     optional, defaults to "Team ODAX"
 //   SITE_URL        optional, defaults to https://sudarshana-vyuha.onrender.com
-//   LINK_HOURS      optional, how long an unused link lives, defaults to 72
+//   LINK_HOURS      optional, how long an unused grant lives, defaults to 168 (7 days)
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided automatically.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const SITE = (Deno.env.get('SITE_URL') ?? 'https://sudarshana-vyuha.onrender.com').replace(/\/$/, '');
-const LINK_HOURS = Number(Deno.env.get('LINK_HOURS') ?? '72');
+const LINK_HOURS = Number(Deno.env.get('LINK_HOURS') ?? '168');
 
 function cors(origin: string | null): Record<string, string> {
   const ok = origin && (origin === SITE || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin));
@@ -43,7 +44,7 @@ function email(name: string, link: string, expires: Date) {
 <tr><td style="background:#030404;padding:22px 28px;color:#52d3cb;font-size:13px;letter-spacing:2px;font-weight:600">SUDARSHANA VYUHA · TEAM ODAX</td></tr>
 <tr><td style="padding:28px">
 <h1 style="margin:0 0 12px;font-size:22px;line-height:1.25">Your access is approved, ${esc(name)}.</h1>
-<p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#454c4f">Use the button below to download Sudarshana Vyuha. This link is personal and <b>works only once</b>: as soon as you press Download on the page it opens, it is used up.</p>
+<p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#454c4f">You can now download Sudarshana Vyuha, <b>once</b>. Use the button below, or sign in to your access page. As soon as you open the vault, your download is used up and you have one hour to fetch every file.</p>
 <p style="margin:0 0 22px"><a href="${link}" style="display:inline-block;background:#08777e;color:#ffffff;text-decoration:none;font-weight:600;padding:13px 22px;border-radius:999px">Open my one-time download</a></p>
 <p style="margin:0 0 6px;font-size:13px;color:#6b7275">Unused, it expires on <b>${until}</b>.</p>
 <p style="margin:0;font-size:13px;color:#6b7275">Don't forward this email. If you didn't apply for access, ignore it.</p>
@@ -74,18 +75,17 @@ Deno.serve(async (req) => {
   const to = owner?.user?.email;
   if (!to) return reply(404, { error: 'The applicant\'s account has no email address.' });
 
-  const key = Deno.env.get('BREVO_API_KEY'), from = Deno.env.get('SENDER_EMAIL');
-  if (!key || !from) return reply(500, { error: 'Email isn\'t set up yet: add BREVO_API_KEY and SENDER_EMAIL in Edge Function secrets.' });
-
   await service.from('download_tokens').update({ revoked_at: new Date().toISOString() })
     .eq('user_id', r.user_id).is('used_at', null).is('revoked_at', null);
 
   const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
   const expires = new Date(Date.now() + LINK_HOURS * 3600_000);
-  const { data: row, error: insErr } = await service.from('download_tokens')
-    .insert({ token_hash: await sha256(token), user_id: r.user_id, created_by: user.id, expires_at: expires.toISOString() })
-    .select('id').single();
-  if (insErr || !row) return reply(500, { error: 'The link couldn\'t be created. Try again.' });
+  const { error: insErr } = await service.from('download_tokens')
+    .insert({ token_hash: await sha256(token), user_id: r.user_id, created_by: user.id, expires_at: expires.toISOString() });
+  if (insErr) return reply(500, { error: 'The download couldn\'t be granted. Try again.' });
+
+  const key = Deno.env.get('BREVO_API_KEY'), from = Deno.env.get('SENDER_EMAIL');
+  if (!key || !from) return reply(200, { emailed: false, expires_at: expires.toISOString() });
 
   const link = `${SITE}/get.html#${token}`;   // after '#', so the token never reaches any server log
   const { html, text } = email(r.full_name, link, expires);
@@ -99,9 +99,7 @@ Deno.serve(async (req) => {
       htmlContent: html, textContent: text,
     }),
   });
-  if (!sent.ok) {
-    await service.from('download_tokens').update({ revoked_at: new Date().toISOString() }).eq('id', row.id);
-    return reply(502, { error: `The email couldn't be sent (Brevo said ${sent.status}). Check the Brevo key and verified sender.` });
-  }
-  return reply(200, { sent_to: mask(to), expires_at: expires.toISOString() });
+  // The grant stands even if the email fails: they can still download by signing in.
+  if (!sent.ok) return reply(200, { emailed: false, email_error: `Brevo said ${sent.status}`, expires_at: expires.toISOString() });
+  return reply(200, { emailed: true, sent_to: mask(to), expires_at: expires.toISOString() });
 });

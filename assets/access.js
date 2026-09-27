@@ -161,13 +161,52 @@ function showApply(prev) {
   };
 }
 
-/* ---------- status and download ---------- */
+/* ---------- the vault: one download per approval ---------- */
+async function vaultPanel(acts) {
+  const open = window.SVVault.saved();
+  if (open) { step(3); window.SVVault.render(view, open); return; }
+  const token = async () => (await sb.auth.getSession()).data.session?.access_token;
+  let res;
+  try { res = await window.SVVault.call({ action: 'status' }, await token()); } catch { res = { body: {} }; }
+  const h = $('#stH'), p = $('#stP'), s = res.body.state;
+  if (s === 'valid') {
+    h.textContent = 'Your download is ready.';
+    p.textContent = 'You can download Sudarshana Vyuha once. Open the vault only when you\'re ready: that uses your download and gives you one hour to fetch every file.';
+    const b = document.createElement('button'); b.className = 'btn primary'; b.type = 'button'; b.textContent = 'Open the vault';
+    b.onclick = async () => {
+      say(''); busy(b, true, 'Opening the vault…');
+      let x;
+      try { x = await window.SVVault.call({ action: 'open' }, await token()); } catch { x = { ok: false, body: {} }; }
+      busy(b, false);
+      if (!x.ok) return say(x.body.error || 'The vault couldn\'t be opened. Refresh and try again.');
+      step(3); window.SVVault.render(view, x.body);
+    };
+    acts.prepend(b);
+  } else if (s === 'used') {
+    h.textContent = 'Your download has been used.';
+    p.textContent = `You opened the vault on ${when(res.body.used_at)}. Each approval allows one download. If you need it again, ask Team ODAX to issue a new one.`;
+  } else if (s === 'expired') {
+    h.textContent = 'Your download expired unused.';
+    p.textContent = 'Ask Team ODAX to issue a new one.';
+  } else if (s === 'none') {
+    h.textContent = 'Your download is being prepared.';
+    p.textContent = 'Team ODAX will issue it shortly. Check back here.';
+  } else if (s === 'revoked') {
+    h.textContent = 'Your download was withdrawn.';
+    p.textContent = 'Contact Team ODAX if you think this is a mistake.';
+  } else {
+    h.textContent = 'The vault isn\'t reachable right now.';
+    p.textContent = 'Refresh this page in a minute to try again.';
+  }
+}
+
+/* ---------- status ---------- */
 function showStatus(r) {
   show('t-status');
   const pill = $('#stPill'), acts = $('#stActions');
   const text = {
     pending: ['Under review', 'Your application is with Team ODAX.', 'We check every application by hand. Sign in here again to see the decision.'],
-    approved: ['Approved', 'You\'re cleared. Check your email.', 'We\'ve emailed you a personal download link. It works once and expires if unused, so open it only when you\'re ready to download. If it\'s used up or expired, ask Team ODAX to send a new one.'],
+    approved: ['Approved', 'You\'re cleared.', 'Checking your download…'],
     rejected: ['Not approved', 'Your application wasn\'t approved.', 'Read the reviewer\'s note, then update your application and resubmit.'],
     revoked: ['Access revoked', 'Your access has been withdrawn.', 'Contact Team ODAX if you think this is a mistake.'],
     error: ['Unavailable', 'We couldn\'t load your application.', 'Refresh the page to try again.'],
@@ -183,6 +222,7 @@ function showStatus(r) {
       .forEach(([k, v]) => { const d = document.createElement('div'), t = document.createElement('dt'), dd = document.createElement('dd'); t.textContent = k; dd.textContent = v; d.append(t, dd); dl.append(d); });
   } else dl.hidden = true;
 
+  if (r.status === 'approved') vaultPanel(acts);
   if (r.status === 'rejected') {
     const b = document.createElement('button'); b.className = 'btn primary'; b.type = 'button'; b.textContent = 'Update and resubmit';
     b.onclick = () => showApply(r); acts.append(b);
