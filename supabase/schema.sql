@@ -133,6 +133,44 @@ create policy "reviewers read downloads" on public.download_log
   for select to authenticated using (public.is_admin());
 
 -------------------------------------------------------------------------------
+-- One-time download links (created by send-link, consumed by redeem)
+-- Only a SHA-256 hash of each link is stored, so a database leak reveals no working link.
+-------------------------------------------------------------------------------
+create table if not exists public.download_tokens (
+  id          bigint generated always as identity primary key,
+  token_hash  text not null unique,
+  user_id     uuid not null references auth.users on delete cascade,
+  created_by  uuid references auth.users,
+  created_at  timestamptz not null default now(),
+  expires_at  timestamptz not null,
+  used_at     timestamptz,
+  used_ua     text,
+  revoked_at  timestamptz
+);
+create index if not exists download_tokens_user on public.download_tokens (user_id);
+alter table public.download_tokens enable row level security;
+
+drop policy if exists "reviewers read links" on public.download_tokens;
+create policy "reviewers read links" on public.download_tokens
+  for select to authenticated using (public.is_admin());
+
+-- Leaving 'approved' (revoked, rejected) kills every link that hasn't been used yet.
+create or replace function public.revoke_links_when_access_ends() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if old.status = 'approved' and new.status <> 'approved' then
+    update public.download_tokens set revoked_at = now()
+    where user_id = new.user_id and used_at is null and revoked_at is null;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists revoke_links_when_access_ends on public.access_requests;
+create trigger revoke_links_when_access_ends
+  after update of status on public.access_requests
+  for each row execute function public.revoke_links_when_access_ends();
+
+-------------------------------------------------------------------------------
 -- Storage: applicant documents (private) and the installer (private)
 -------------------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

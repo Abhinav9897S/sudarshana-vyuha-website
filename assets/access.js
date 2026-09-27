@@ -167,7 +167,7 @@ function showStatus(r) {
   const pill = $('#stPill'), acts = $('#stActions');
   const text = {
     pending: ['Under review', 'Your application is with Team ODAX.', 'We check every application by hand. Sign in here again to see the decision.'],
-    approved: ['Approved', 'You\'re cleared to download.', 'Your link is created when you press Download and works for 10 minutes. Each download is logged against your account.'],
+    approved: ['Approved', 'You\'re cleared. Check your email.', 'We\'ve emailed you a personal download link. It works once and expires if unused, so open it only when you\'re ready to download. If it\'s used up or expired, ask Team ODAX to send a new one.'],
     rejected: ['Not approved', 'Your application wasn\'t approved.', 'Read the reviewer\'s note, then update your application and resubmit.'],
     revoked: ['Access revoked', 'Your access has been withdrawn.', 'Contact Team ODAX if you think this is a mistake.'],
     error: ['Unavailable', 'We couldn\'t load your application.', 'Refresh the page to try again.'],
@@ -183,10 +183,6 @@ function showStatus(r) {
       .forEach(([k, v]) => { const d = document.createElement('div'), t = document.createElement('dt'), dd = document.createElement('dd'); t.textContent = k; dd.textContent = v; d.append(t, dd); dl.append(d); });
   } else dl.hidden = true;
 
-  if (r.status === 'approved') {
-    const b = document.createElement('button'); b.className = 'btn primary'; b.type = 'button'; b.textContent = 'Download for Windows';
-    b.onclick = () => download(b); acts.append(b);
-  }
   if (r.status === 'rejected') {
     const b = document.createElement('button'); b.className = 'btn primary'; b.type = 'button'; b.textContent = 'Update and resubmit';
     b.onclick = () => showApply(r); acts.append(b);
@@ -195,17 +191,5 @@ function showStatus(r) {
     const b = document.createElement('button'); b.className = 'btn'; b.type = 'button'; b.textContent = 'Edit application';
     b.onclick = () => showApply(r); acts.append(b);
   }
-}
-async function download(btn) {
-  say(''); busy(btn, true, 'Preparing your link…');
-  const { data, error } = await sb.functions.invoke('download', { method: 'POST' });
-  busy(btn, false);
-  if (error) {
-    let text = 'The download couldn\'t start. Please try again.';
-    try { text = (await error.context.json()).error || text; } catch { /* keep the default */ }
-    return say(text);
-  }
-  say('Your download is starting. The link expires in 10 minutes.', 'ok');
-  location.href = data.url;
 }
 })();

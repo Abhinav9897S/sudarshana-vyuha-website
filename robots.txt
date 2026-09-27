@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /get.html
 Disallow: /supabase/
 
 Sitemap: https://sudarshana-vyuha.onrender.com/sitemap.xml

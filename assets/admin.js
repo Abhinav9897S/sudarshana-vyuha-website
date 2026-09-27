@@ -11,7 +11,7 @@ const configured = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(cfg.supabaseUrl |
 if (!configured || !window.supabase) { show('t-setup'); return; }
 const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
 
-let shownFor, rows = [], downloads = {}, filter = 'pending';
+let shownFor, rows = [], downloads = {}, links = {}, filter = 'pending';
 const LABEL = { pending: 'Pending', approved: 'Approved', rejected: 'Rejected', revoked: 'Revoked', all: 'All' };
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -39,14 +39,17 @@ function signIn() {
 }
 
 async function load() {
-  const [{ data, error }, log] = await Promise.all([
+  const [{ data, error }, log, tok] = await Promise.all([
     sb.from('access_requests').select('*').order('updated_at', { ascending: false }),
     sb.from('download_log').select('user_id, downloaded_at').order('downloaded_at', { ascending: false }),
+    sb.from('download_tokens').select('user_id, created_at, expires_at, used_at, revoked_at').order('created_at', { ascending: false }),
   ]);
   if (error) return say('Couldn\'t load applications. Refresh to try again.');
   rows = data || [];
   downloads = {};
   (log.data || []).forEach(d => { (downloads[d.user_id] ||= []).push(d.downloaded_at); });
+  links = {};
+  (tok.data || []).forEach(t => { if (!links[t.user_id]) links[t.user_id] = t; });   // newest link per person
   render();
 }
 
@@ -75,7 +78,7 @@ function card(r) {
   const meta = el('div', 'meta');
   const dls = downloads[r.user_id] || [];
   [r.official_email, r.phone, `ID: ${r.id_doc_type}`, `Submitted ${when(r.updated_at)}`,
-   r.reviewed_at && `Decided ${when(r.reviewed_at)}`, `${dls.length} download${dls.length === 1 ? '' : 's'}${dls[0] ? ', last ' + when(dls[0]) : ''}`]
+   r.reviewed_at && `Decided ${when(r.reviewed_at)}`, linkState(links[r.user_id]), `${dls.length} file${dls.length === 1 ? '' : 's'} downloaded${dls[0] ? ', last ' + when(dls[0]) : ''}`]
     .filter(Boolean).forEach(t => meta.append(el('span', null, t)));
   main.append(meta);
 
@@ -93,7 +96,11 @@ function card(r) {
   };
   if (r.status !== 'approved') act('Approve', 'approved', 'ok');
   if (r.status === 'pending') act('Reject', 'rejected', 'bad');
-  if (r.status === 'approved') act('Revoke access', 'revoked', 'bad');
+  if (r.status === 'approved') {
+    const b = el('button', 'btn ghost', 'Send new link'); b.type = 'button';
+    b.onclick = () => sendLink(r, b); acts.append(b);
+    act('Revoke access', 'revoked', 'bad');
+  }
   side.append(docs, note, acts);
   c.append(main, side);
   return c;
@@ -111,7 +118,26 @@ async function decide(r, status, note, btn) {
   btn.disabled = true; say('');
   const { error } = await sb.from('access_requests').update({ status, reviewer_note: note || null }).eq('id', r.id);
   if (error) { btn.disabled = false; return say('That decision couldn\'t be saved. Try again.'); }
+  if (status === 'approved') { await sendLink(r, btn, true); return; }
   say(`${r.full_name}: ${LABEL[status].toLowerCase()}.`, 'ok');
   await load();
+}
+
+function linkState(t) {
+  if (!t) return 'No link sent';
+  if (t.used_at) return `Link used ${when(t.used_at)}`;
+  if (t.revoked_at) return 'Last link cancelled';
+  if (new Date(t.expires_at) <= new Date()) return `Link expired ${when(t.expires_at)}`;
+  return `Link sent ${when(t.created_at)}, unused`;
+}
+
+async function sendLink(r, btn, justApproved) {
+  btn.disabled = true; say('');
+  const { data, error } = await sb.functions.invoke('send-link', { body: { request_id: r.id } });
+  let problem = '';
+  if (error) { problem = 'The email couldn\'t be sent.'; try { problem = (await error.context.json()).error || problem; } catch { /* keep the default */ } }
+  await load();
+  if (problem) say(`${justApproved ? r.full_name + ' is approved, but ' : ''}${problem}${justApproved ? ' Use “Send new link” once it\'s fixed.' : ''}`);
+  else say(`${justApproved ? 'Approved. ' : ''}One-time link emailed to ${data.sent_to}.`, 'ok');
 }
 })();

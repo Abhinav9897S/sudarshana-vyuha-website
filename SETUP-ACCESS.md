@@ -2,8 +2,10 @@
 
 Visitors who press **Download** land on `access.html`. They create an account,
 confirm their email, upload a DigiLocker-issued ID and a signed authority letter,
-and wait. A reviewer approves or rejects them on `admin.html`. Approved users get a
-download link that expires after 10 minutes, and every download is logged.
+and wait. A reviewer approves or rejects them on `admin.html`. Approving automatically
+emails a **one-time link**: it opens `get.html`, and pressing Download there uses it up and
+releases the files from the private vault. Unused links expire after 72 hours; every
+download is logged.
 
 Everything runs on Supabase (free tier). About 20 minutes, once.
 
@@ -25,15 +27,30 @@ Everything runs on Supabase (free tier). About 20 minutes, once.
 **Project Settings → API**: copy the **Project URL** and the **anon public** key into
 `config.js`. Never use the `service_role` key on the website.
 
-## 5. Deploy the download function
-**Edge Functions → Deploy a new function → Via editor**, name it `download`, paste
-`supabase/functions/download/index.ts`, deploy. Then **Edge Functions → Secrets**:
-- `RELEASE_PATH` = the installer's file name, e.g. `SudarshanaVyuha-setup.zip`
-- `ALLOWED_ORIGINS` = `https://sudarshana-vyuha.onrender.com` (add your custom domain later, comma-separated)
+## 5. Set up email with Brevo (free, 300 emails a day)
+1. Sign up at **brevo.com**.
+2. **Senders, Domains & Dedicated IPs → Senders → Add a sender**: add the address emails should
+   come from (e.g. your Gmail) and click the verification link Brevo sends to it.
+3. **SMTP & API → API keys → Generate a new API key**. Copy it (starts with `xkeysib-`).
+4. Optional but recommended, so outside applicants receive their sign-up confirmation email:
+   Supabase **Authentication → Emails → SMTP Settings → Enable custom SMTP**:
+   host `smtp-relay.brevo.com`, port `587`, username and password from Brevo
+   **SMTP & API → SMTP**, sender = the address you verified.
 
-## 6. Upload the installer
-**Storage → releases → Upload file**: upload the file named exactly as `RELEASE_PATH`.
-To ship a new version, upload the new file and update `RELEASE_PATH`.
+## 6. Deploy the two functions
+For each one: **Edge Functions → Deploy a new function → Via editor**, paste the code, then
+open the function's **Details** and turn **Verify JWT** **off** (both functions check access themselves).
+- `send-link`: paste `supabase/functions/send-link/index.ts`. Emails the one-time link when you approve someone.
+- `redeem`: paste `supabase/functions/redeem/index.ts`. Checks and uses up a link when the applicant presses Download.
+
+**Edge Functions → Secrets**, add:
+- `BREVO_API_KEY` = the key from step 5
+- `SENDER_EMAIL` = the verified sender address
+- `RELEASE_PATHS` = the files to hand over, comma-separated, e.g. `SudarshanaVyuha-setup.zip,vault.key`
+- optional: `SENDER_NAME` (default `Team ODAX`), `LINK_HOURS` (default `72`)
+
+Upload every file named in `RELEASE_PATHS` to **Storage → releases** (the private vault),
+with exactly those names. To ship a new version, upload it and update `RELEASE_PATHS`.
 
 ## 7. Make yourself the reviewer
 1. Open `access.html` on the site, create your account, confirm the email.
@@ -49,7 +66,10 @@ To ship a new version, upload the new file and update `RELEASE_PATH`.
 - Nobody can approve themselves: a database trigger resets any status change that isn't made by a reviewer.
 - Reviewers can change only the decision and the note, never what the applicant submitted.
 - Documents live in a private bucket; only the owner and reviewers can open them, through 5-minute links.
-- The installer bucket has no public access at all; only the download function can create a link, and only for approved users.
+- The vault bucket has no public access at all. Files leave it only through `redeem`, once per link.
+- Only a hash of each link is stored, so even a database leak exposes no working link.
+- Email scanners that open links can't burn them: a link is used up only by pressing Download.
+- Revoking access, or sending a new link, cancels every unused link for that person.
 
 ## Notes
 - A free Supabase project pauses after 7 days without activity. You'll get an email; one click restores it.
