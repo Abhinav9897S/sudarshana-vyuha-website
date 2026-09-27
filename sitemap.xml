@@ -7,4 +7,9 @@
     <priority>1.0</priority>
     <image:image><image:loc>https://sudarshana-vyuha.onrender.com/assets/og-image.png</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://sudarshana-vyuha.onrender.com/access.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <priority>0.6</priority>
+  </url>
 </urlset>

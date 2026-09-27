@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verified Download · Sudarshana Vyuha</title>
+<meta name="description" content="Download Sudarshana Vyuha. Access is limited to verified users: create an account, upload a DigiLocker-issued identity document and a signed letter from your authority, and Team ODAX reviews it.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://sudarshana-vyuha.onrender.com/access.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#030404">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/auth.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./" aria-label="Back to Sudarshana Vyuha">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="2.4"/><g stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.65 4.65l1.84 1.84M17.51 17.51l1.84 1.84M4.65 19.35l1.84-1.84M17.51 6.49l1.84-1.84"/></g></svg>
+    <span lang="hi">सुदर्शन व्यूह</span>
+  </a>
+  <div class="bar-r" id="who" hidden><span class="em" id="whoEmail"></span><button class="btn ghost" id="signOut" type="button">Sign out</button></div>
+</header>
+
+<main class="shell">
+  <section class="intro" aria-labelledby="introH">
+    <p class="label">Verified access</p>
+    <h1 id="introH">The download is for verified users only.</h1>
+    <p>Sudarshana Vyuha maps buildings from video. To keep it out of the wrong hands, every download is tied to a verified person and an authority that vouches for them.</p>
+    <ol class="steps" id="steps" aria-label="Your progress">
+      <li>Create an account and confirm your email</li>
+      <li>Upload your DigiLocker document and authority letter</li>
+      <li>Team ODAX reviews your application</li>
+      <li>Download, with a link that expires in 10 minutes</li>
+    </ol>
+    <p class="guard"><b>Your documents are private.</b> Only you and the Team ODAX reviewer can open them. Every download is logged against your account.</p>
+  </section>
+
+  <section class="card in" id="view" aria-live="polite">
+    <div class="state"><p class="sub">Loading…</p></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <details>
+    <summary>How we handle your data</summary>
+    <ul>
+      <li>We collect your name, organisation, designation, contact details, an identity document and an authority letter, only to decide whether to grant you the download.</li>
+      <li>Files are stored in a private, encrypted storage bucket. Only you and Team ODAX's reviewer can open them, through links that expire in minutes.</li>
+      <li>If you upload an Aadhaar card, upload the <b>masked Aadhaar</b> from DigiLocker, which shows only the last 4 digits.</li>
+      <li>We keep your application while your access is active. To withdraw consent and have your data deleted, email the team from the address you registered with.</li>
+    </ul>
+  </details>
+</footer>
+
+<!-- views -->
+<template id="t-setup">
+  <div class="state">
+    <span class="pill pending">Not connected yet</span>
+    <h2>Verified downloads are being set up.</h2>
+    <p class="sub">The access system isn't connected to its server yet. Please check back soon.</p>
+    <a class="btn" href="./">Back to the site</a>
+  </div>
+</template>
+
+<template id="t-auth">
+  <div class="card-head"><p class="label" id="authLabel">Step 1 of 4</p><h2 id="authH">Sign in to continue</h2></div>
+  <div class="tabs" role="tablist" aria-label="Account" style="--t:0">
+    <button type="button" role="tab" id="tabIn" aria-selected="true">Sign in</button>
+    <button type="button" role="tab" id="tabUp" aria-selected="false">Create account</button>
+  </div>
+  <form id="authForm" novalidate>
+    <label class="field"><span>Email</span><input type="email" id="aEmail" autocomplete="email" required></label>
+    <label class="field"><span>Password</span><input type="password" id="aPass" autocomplete="current-password" minlength="10" required><small id="passHint" hidden>At least 10 characters.</small></label>
+    <label class="field" id="confirmWrap" hidden><span>Confirm password</span><input type="password" id="aPass2" autocomplete="new-password" minlength="10"></label>
+    <p class="msg" hidden></p>
+    <div class="actions">
+      <button class="btn primary" type="submit" id="authGo">Sign in</button>
+      <button class="linkbtn" type="button" id="forgot">Forgot password?</button>
+    </div>
+  </form>
+</template>
+
+<template id="t-check-email">
+  <div class="state">
+    <span class="pill pending">Confirm your email</span>
+    <h2>Check your inbox.</h2>
+    <p class="sub">We sent a confirmation link to <b id="sentTo"></b>. Open it on this device, and you'll come straight back here to continue.</p>
+    <button class="btn" type="button" id="backToSignIn">Back to sign in</button>
+  </div>
+</template>
+
+<template id="t-reset">
+  <div class="card-head"><p class="label">Account</p><h2>Choose a new password</h2></div>
+  <form id="resetForm" novalidate>
+    <label class="field"><span>New password</span><input type="password" id="rPass" autocomplete="new-password" minlength="10" required><small>At least 10 characters.</small></label>
+    <p class="msg" hidden></p>
+    <div class="actions"><button class="btn primary" type="submit">Save password</button></div>
+  </form>
+</template>
+
+<template id="t-apply">
+  <div class="card-head"><p class="label">Step 2 of 4</p><h2 id="applyH">Apply for access</h2><p class="sub" id="applySub">Tell us who you are and who authorises you. Team ODAX checks every application by hand.</p></div>
+  <form id="applyForm" novalidate>
+    <div class="row2">
+      <label class="field"><span>Full name, as on your ID</span><input type="text" id="fName" autocomplete="name" minlength="2" maxlength="120" required></label>
+      <label class="field"><span>Designation</span><input type="text" id="fDesig" autocomplete="organization-title" minlength="2" maxlength="120" required placeholder="e.g. Inspector, Project Officer"></label>
+    </div>
+    <label class="field"><span>Organisation or unit</span><input type="text" id="fOrg" autocomplete="organization" minlength="2" maxlength="160" required></label>
+    <div class="row2">
+      <label class="field"><span>Official email</span><input type="email" id="fMail" required><small>Your work address, e.g. name@department.gov.in</small></label>
+      <label class="field"><span>Phone <small>(optional)</small></span><input type="tel" id="fPhone" autocomplete="tel" pattern="[0-9+() \-]{7,20}"></label>
+    </div>
+    <label class="field"><span>Why do you need Sudarshana Vyuha?</span><textarea id="fPurpose" minlength="20" maxlength="2000" required placeholder="The operation or work it supports, and how it will be used."></textarea></label>
+    <label class="field"><span>Identity document from DigiLocker</span>
+      <select id="fDocType" required>
+        <option value="">Choose the document you'll upload</option>
+        <option>Masked Aadhaar</option>
+        <option>PAN card</option>
+        <option>Driving licence</option>
+        <option>Service or employee ID card</option>
+        <option>Other government-issued ID</option>
+      </select>
+    </label>
+    <label class="file" id="idDrop"><input type="file" id="fId" accept="application/pdf,image/jpeg,image/png" required><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="6" y="9" width="28" height="22" rx="3"/><circle cx="15" cy="18" r="3.2"/><path d="M10.5 26c1-2.6 2.6-3.8 4.5-3.8s3.5 1.2 4.5 3.8M23 16h7M23 20.5h7M23 25h4"/></svg><b>Upload the DigiLocker document</b><em>PDF, JPG or PNG, up to 10 MB</em></label>
+    <label class="file" id="letterDrop"><input type="file" id="fLetter" accept="application/pdf,image/jpeg,image/png" required><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 5h13l7 7v23H11z"/><path d="M24 5v7h7M15 18h12M15 22.5h12M15 27c2-2 3.4 1.6 5.4-.4s3 .8 5.6-.6"/></svg><b>Upload the signed authority letter</b><em>On letterhead, signed and stamped by your commanding officer or head of department</em></label>
+    <label class="check"><input type="checkbox" id="fConsent" required><span>I confirm these documents are genuine and mine, and I agree that Team ODAX may store and review them to decide on my access. I will not share the software or my download with anyone.</span></label>
+    <p class="msg" hidden></p>
+    <div class="actions"><button class="btn primary" type="submit" id="applyGo">Submit for review</button></div>
+  </form>
+</template>
+
+<template id="t-status">
+  <div class="state">
+    <span class="pill" id="stPill"></span>
+    <h2 id="stH"></h2>
+    <p class="sub" id="stP"></p>
+    <p class="note" id="stNote" hidden></p>
+    <dl class="dl" id="stDl"></dl>
+    <p class="msg" hidden></p>
+    <div class="actions" id="stActions"></div>
+  </div>
+</template>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/access.js"></script>
+</body>
+</html>

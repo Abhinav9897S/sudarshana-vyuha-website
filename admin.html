@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Access Review · Sudarshana Vyuha</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<meta name="theme-color" content="#030404">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/auth.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./" aria-label="Back to Sudarshana Vyuha">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="2.4"/><g stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.65 4.65l1.84 1.84M17.51 17.51l1.84 1.84M4.65 19.35l1.84-1.84M17.51 6.49l1.84-1.84"/></g></svg>
+    <span lang="hi">सुदर्शन व्यूह</span>
+  </a>
+  <span class="label" style="color:var(--accent)">Access review</span>
+  <div class="bar-r" id="who" hidden><span class="em" id="whoEmail"></span><button class="btn ghost" id="signOut" type="button">Sign out</button></div>
+</header>
+
+<main class="shell wide">
+  <section id="view" aria-live="polite"><p class="sub">Loading…</p></section>
+</main>
+
+<template id="t-setup">
+  <div class="card state"><span class="pill pending">Not connected</span><h2>Add your Supabase details to config.js first.</h2><p class="sub">See SETUP-ACCESS.md in the repository.</p></div>
+</template>
+
+<template id="t-signin">
+  <div class="card" style="max-width:460px">
+    <div class="card-head"><p class="label">Reviewers only</p><h2>Sign in to review applications</h2></div>
+    <form id="inForm" novalidate>
+      <label class="field"><span>Email</span><input type="email" id="aEmail" autocomplete="email" required></label>
+      <label class="field"><span>Password</span><input type="password" id="aPass" autocomplete="current-password" required></label>
+      <p class="msg" hidden></p>
+      <div class="actions"><button class="btn primary" type="submit" id="inGo">Sign in</button></div>
+    </form>
+  </div>
+</template>
+
+<template id="t-denied">
+  <div class="card state" style="max-width:520px"><span class="pill rejected">No reviewer access</span><h2>This account can't review applications.</h2><p class="sub">Reviewers are added in the database. See SETUP-ACCESS.md.</p></div>
+</template>
+
+<template id="t-queue">
+  <div class="card-head" style="margin-bottom:18px"><p class="label">Team ODAX</p><h2 style="font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.035em">Applications</h2></div>
+  <div class="filters" id="filters" role="group" aria-label="Show"></div>
+  <p class="msg" hidden></p>
+  <div class="queue" id="queue"></div>
+</template>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>

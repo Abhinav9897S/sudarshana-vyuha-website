@@ -912,13 +912,13 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
         <svg class="get-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="2.4"/><g stroke-linecap="round"><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.65 4.65l1.84 1.84M17.51 17.51l1.84 1.84M4.65 19.35l1.84-1.84M17.51 6.49l1.84-1.84"/></g></svg>
         <p class="get-h">Sudarshana Vyuha for Windows</p>
         <p class="get-p">Runs entirely on your machine. Nothing you load ever leaves it.</p>
-        <a class="dl-btn" id="dlBtn" href="https://github.com/Abhinav9897S/ProjectSudarshanVyuha/releases/latest" target="_blank" rel="noopener">
+        <a class="dl-btn" id="dlBtn" href="access.html">
           <span class="dl-ring" aria-hidden="true"></span>
           <span class="dl-fill" aria-hidden="true"></span>
           <span class="dl-ico" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path class="dl-arrow" d="M10 3v10M5.5 8.5L10 13l4.5-4.5"/><path d="M4 16.5h12"/></svg></span>
           <span class="dl-txt" id="dlTxt">Download for your PC</span>
         </a>
-        <p class="get-note label">Windows · 64-bit · GitHub Releases</p>
+        <p class="get-note label">Windows · 64-bit · Verified users only</p>
       </div>
     </div>
   </div>
@@ -1815,7 +1815,7 @@ function drawOdax(dt) {
 const dlBtn = $('#dlBtn'), dlTxt = $('#dlTxt');
 dlBtn.addEventListener('click', () => {
   dlBtn.classList.remove('go'); void dlBtn.offsetWidth; dlBtn.classList.add('go');
-  dlTxt.textContent = 'Opening releases…';
+  dlTxt.textContent = 'Opening secure access…';
   setTimeout(() => { dlTxt.textContent = 'Download for your PC'; dlBtn.classList.remove('go'); }, 2600);
 });
 
