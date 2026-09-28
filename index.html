@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sudarshana Vyuha (सुदर्शन व्यूह) · Drone Video to 3D Model & Floor Plan | Team ODAX</title>
 <meta name="description" content="Sudarshana Vyuha (सुदर्शन व्यूह) by Team ODAX turns raw drone and body-cam video into a measured 3D model and a dimensioned floor plan, fully offline on one PC.">
-<meta name="keywords" content="Sudarshana Vyuha, सुदर्शन व्यूह, Sudarshan Vyuha, Team ODAX, drone video to 3D model, 3D reconstruction, floor plan from video, offline photogrammetry, georeferenced 3D model, DJI SRT telemetry, thermal infrared reconstruction, measurement accuracy">
+<meta name="keywords" content="Sudarshana Vyuha, सुदर्शन व्यूह, Sudarshan Vyuha, Team ODAX, drone video to 3D model, 3D reconstruction, floor plan from video, offline photogrammetry, georeferenced 3D model, DJI SRT telemetry, thermal infrared reconstruction, 3D model confidence zones">
 <meta name="author" content="Team ODAX">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://sudarshana-vyuha.onrender.com/">
@@ -510,6 +510,21 @@ html.ld-done :is(.hero .hud){transition:opacity .9s ease .5s}
 .fr-ir i{position:absolute;inset:0;background:var(--heat);filter:grayscale(1) contrast(.3) brightness(.8);clip-path:inset(0 50% 0 0)}
 .fr-ir::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.55);z-index:1}
 .fr-ir span{position:relative;z-index:1;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.fr-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(227,163,59,.45);color:#e3a33b;font-size:9.5px;letter-spacing:.1em;vertical-align:1px}
+.fr b.z-gt{color:#45c97c;font-weight:600}
+.fr b.z-rt{color:#ef6b55;font-weight:600}
+.fr-plan{width:100%;height:auto;border-radius:12px;background:#060707;border:1px solid var(--stage-line)}
+.fr-plan g path,.fr-plan .fr-door{fill:none;stroke-width:5;stroke-linecap:round}
+.fr-plan .z-g path{stroke:#45c97c}
+.fr-plan .z-a path{stroke:#e3a33b}
+.fr-plan .z-r path{stroke:#ef6b55}
+.fr-plan .fr-door{stroke:rgba(241,244,244,.12);stroke-width:2;stroke-dasharray:3 4}
+.fr-plan-t{fill:rgba(241,244,244,.6);font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.fr-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font:500 11.5px var(--mono);color:var(--stage-ink-2)}
+.fr-legend span{display:inline-flex;align-items:center;gap:7px}
+.fr-legend i{width:18px;height:5px;border-radius:3px}
+.fr-legend .z-gi{background:#45c97c}.fr-legend .z-ai{background:#e3a33b}.fr-legend .z-ri{background:#ef6b55}
+.fr-legend .z-ni{height:10px;width:14px;background:repeating-linear-gradient(45deg,rgba(241,244,244,.3) 0 1.5px,transparent 1.5px 5px);border:1px solid var(--stage-line)}
 .fr-num{display:grid;gap:4px;padding-top:14px;border-top:1px solid var(--stage-line)}
 .fr-num b,.fr-stats b{font:600 clamp(1.8rem,2.8vw,2.4rem)/1 var(--sans);letter-spacing:-.04em;color:var(--stage-ink);font-variant-numeric:tabular-nums}
 .fr-num span,.fr-stats span{font-size:13px;color:var(--stage-ink-3)}
@@ -920,9 +935,9 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
     <div class="sec-head split">
       <div style="display:grid;gap:18px">
         <p class="label eyebrow" data-rv>Field-ready</p>
-        <h2 class="h2" data-rv>On the map. In the dark. Measured honestly.</h2>
+        <h2 class="h2" data-rv>On the map. In the dark. Honest about what it saw.</h2>
       </div>
-      <p class="lead" data-rv>A model is only useful in the field if it sits in the right place, works from the cameras teams actually carry, and tells you how far to trust it.</p>
+      <p class="lead" data-rv>A model is only useful in the field if it sits in the right place, works from the cameras teams actually carry, and shows you which parts to trust.</p>
     </div>
 
     <div class="fr-grid3">
@@ -955,16 +970,26 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
       </article>
 
       <article class="fr" data-rv>
-        <p class="label fr-k">Accuracy</p>
-        <h3>Every number says where it came from.</h3>
-        <p>Before the expensive dense stage, the camera geometry is checked: rays that meet at 1.7° leave metres of doubt, at 30° only centimetres. A model the footage can't support is flagged, not delivered. Every dimension carries its source, measured or assumed, and an assumption never looks like a measurement.</p>
+        <p class="label fr-k">Confidence zones <span class="fr-tag">In development</span></p>
+        <h3>Green you can trust. Red you can't.</h3>
+        <p>Every part of the model is coloured by how well the cameras actually saw it. <b class="z-gt">Green</b>: seen by many cameras from well-separated angles, safe to measure. <b class="z-rt">Red</b>: barely observed, or surface the software filled in with nothing seen nearby. Rooms no camera entered are marked unknown, never drawn as empty.</p>
+        <svg class="fr-plan" viewBox="0 0 300 150" role="img" aria-label="Illustration: a floor plan with well-observed walls in green, a weakly observed wall in amber, a filled-in wall in red, and an unseen room hatched as no data">
+          <defs><pattern id="nodata" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V7" stroke="rgba(241,244,244,.22)" stroke-width="1.4"/></pattern></defs>
+          <rect x="196" y="16" width="86" height="60" fill="url(#nodata)"/>
+          <text x="239" y="50" text-anchor="middle" class="fr-plan-t">no data</text>
+          <g class="z-g"><path d="M18 16H196M18 16V134M18 134H150M110 16V76M18 76H80"/></g>
+          <g class="z-a"><path d="M150 134H282M282 76V134"/></g>
+          <g class="z-r"><path d="M196 76H282" stroke-dasharray="6 5"/></g>
+          <path class="fr-door" d="M80 76H110"/>
+        </svg>
+        <div class="fr-legend"><span><i class="z-gi"></i>Trust</span><span><i class="z-ai"></i>Caution</span><span><i class="z-ri"></i>Don't rely on it</span><span><i class="z-ni"></i>Never seen</span></div>
         <div class="fr-stats">
-          <div><b>98.7 %</b><span>frames registered on a survey flight</span></div>
-          <div><b>1.34 px</b><span>mean reprojection error</span></div>
-          <div><b>8.06 × 5.00</b><span>metres, from an 8.00 × 5.00 m room</span></div>
+          <div><b>8.8–14.7 %</b><span>of our meshes is filled-in surface with no observation behind it: the part that turns red</span></div>
+          <div><b>90.6 %</b><span>of dense points seen by 5 or more cameras (median 10) on our tactical clip</span></div>
         </div>
         <dl class="fr-spec">
-          <div><dt>Scale from</dt><dd>GPS telemetry · a known length · camera height (labelled as assumed)</dd></div>
+          <div><dt>Scored by</dt><dd>View count · triangulation angle · distance · local support</dd></div>
+          <div><dt>Shown on</dt><dd>Point cloud · solid mesh · floor-plan walls</dd></div>
         </dl>
       </article>
     </div>
