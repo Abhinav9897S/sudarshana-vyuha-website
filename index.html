@@ -149,6 +149,26 @@
    },
    "primaryImageOfPage": "https://sudarshana-vyuha.onrender.com/assets/og-image.png",
    "inLanguage": "en"
+  },
+  {
+   "@type": "VideoObject",
+   "@id": "https://sudarshana-vyuha.onrender.com/#video",
+   "name": "Sudarshana Vyuha | Video to 3D Building Model, Fully Offline",
+   "description": "Sudarshana Vyuha by Team ODAX turns raw drone and body-cam footage into a measured 3D building model and a dimensioned floor plan, fully offline.",
+   "thumbnailUrl": [
+    "https://sudarshana-vyuha.onrender.com/assets/video-poster.jpg",
+    "https://i.ytimg.com/vi/u2LgsmQYgJs/maxresdefault.jpg"
+   ],
+   "uploadDate": "2026-09-27T07:44:42-07:00",
+   "duration": "PT3M11S",
+   "contentUrl": "https://www.youtube.com/watch?v=u2LgsmQYgJs",
+   "embedUrl": "https://www.youtube.com/embed/u2LgsmQYgJs",
+   "publisher": {
+    "@id": "https://sudarshana-vyuha.onrender.com/#org"
+   },
+   "about": {
+    "@id": "https://sudarshana-vyuha.onrender.com/#app"
+   }
   }
  ]
 }
@@ -329,6 +349,35 @@ html.ld-done :is(.hero .hud){transition:opacity .9s ease .5s}
 .hero-meta{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;padding:26px var(--gutter) 40px;border-top:1px solid var(--stage-line);color:var(--stage-ink-3)}
 .hero-meta span{display:flex;align-items:center;gap:10px}
 .hero-meta i{width:5px;height:5px;border-radius:50%;background:var(--stage-accent)}
+
+
+/* ---------- video ---------- */
+.video{position:relative;overflow:clip;padding-top:clamp(64px,10vh,120px)}
+.video .wrap{position:relative;z-index:2}
+.vid-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;margin-bottom:clamp(24px,3.5vw,40px)}
+.vid-meta{display:flex;gap:10px 22px;flex-wrap:wrap;color:var(--stage-ink-3)}
+.vid-meta span+span::before{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--stage-line);margin-right:22px;vertical-align:middle}
+.vid-card{position:relative;display:block;aspect-ratio:16/9;max-width:100%;border-radius:24px;overflow:hidden;background:#000;border:1px solid var(--stage-line);color:var(--stage-ink);text-decoration:none;isolation:isolate;
+  box-shadow:0 60px 120px -50px rgba(82,211,203,.18)}
+.vid-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.015);transition:transform 1.2s var(--ease),filter .8s}
+.vid-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(3,4,4,.88) 0%,rgba(3,4,4,.25) 38%,rgba(3,4,4,0) 60%);transition:opacity .6s}
+.vid-play{position:absolute;left:50%;top:50%;width:clamp(68px,9vw,104px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;display:grid;place-items:center;
+  background:rgba(241,244,244,.92);color:#030404;box-shadow:0 20px 50px -10px rgba(0,0,0,.6);transition:transform .5s var(--ease),background-color .3s}
+.vid-play svg{width:36%;height:36%;margin-left:7%;fill:currentColor}
+.vid-play i{position:absolute;inset:-1px;border-radius:50%;border:2px solid rgba(241,244,244,.7);animation:vidRing 2.4s var(--ease) infinite}
+@keyframes vidRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.vid-cap{position:absolute;left:clamp(18px,3vw,36px);right:clamp(18px,3vw,36px);bottom:clamp(16px,2.6vw,32px);display:grid;gap:6px;max-width:46ch}
+.vid-cap b{font-size:clamp(1.05rem,2vw,1.6rem);letter-spacing:-.025em;line-height:1.15;text-wrap:balance}
+.vid-cap span{font-size:clamp(.85rem,1.2vw,1rem);color:var(--stage-ink-2)}
+.vid-go{position:absolute;right:clamp(18px,3vw,36px);top:clamp(16px,2.6vw,28px);display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  background:rgba(3,4,4,.6);border:1px solid rgba(241,244,244,.18);font:500 12.5px var(--sans);opacity:0;transform:translateY(-6px);transition:opacity .4s,transform .5s var(--ease)}
+.vid-go svg{width:11px;height:11px}
+.vid-card:hover img,.vid-card:focus-visible img{transform:scale(1.05)}
+.vid-card:hover .vid-play,.vid-card:focus-visible .vid-play{transform:scale(1.1);background:var(--stage-accent)}
+.vid-card:hover .vid-go,.vid-card:focus-visible .vid-go{opacity:1;transform:none}
+.vid-card:focus-visible{outline:2px solid var(--stage-accent);outline-offset:4px}
+@media (max-width:640px){.vid-card{border-radius:16px}.vid-cap span{display:none}.vid-go{display:none}}
+@media (hover:none){.vid-go{opacity:1;transform:none}}
 
 /* ---------- pipeline ---------- */
 .scrolly{position:relative;height:560vh}
@@ -728,7 +777,7 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
 .foot-row nav{display:flex;flex-wrap:wrap;gap:6px 20px}
 .foot-row a:hover{color:var(--stage-ink)}
 
-@media (max-width:1060px){
+@media (max-width:1180px){
   .links,.nav-cta{display:none}
   .burger{display:block;margin-left:auto}
 }
@@ -760,13 +809,14 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
     <nav class="links" id="links" aria-label="Sections">
       <span class="pill" id="pill" aria-hidden="true"></span>
       <a href="#overview" style="--i:0">Overview</a>
-      <a href="#pipeline" style="--i:1">Pipeline</a>
-      <a href="#console" style="--i:2">Console</a>
-      <a href="#results" style="--i:3">Results</a>
-      <a href="#accuracy" style="--i:4">Capabilities</a>
-      <a href="#principle" style="--i:5">Principle</a>
-      <a href="#download" style="--i:6">Download</a>
-      <a href="#team" style="--i:7">Team</a>
+      <a href="#video" style="--i:1">Video</a>
+      <a href="#pipeline" style="--i:2">Pipeline</a>
+      <a href="#console" style="--i:3">Console</a>
+      <a href="#results" style="--i:4">Results</a>
+      <a href="#accuracy" style="--i:5">Capabilities</a>
+      <a href="#principle" style="--i:6">Principle</a>
+      <a href="#download" style="--i:7">Download</a>
+      <a href="#team" style="--i:8">Team</a>
     </nav>
     <a class="nav-cta" href="#console">Run a mission</a>
     <button class="burger" id="burger" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><span></span><span></span></button>
@@ -776,13 +826,14 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
 
 <div class="sheet" id="sheet" inert>
   <a href="#overview" style="--i:0"><small>01</small>Overview</a>
-  <a href="#pipeline" style="--i:1"><small>02</small>Pipeline</a>
-  <a href="#console" style="--i:2"><small>03</small>Console</a>
-  <a href="#results" style="--i:3"><small>04</small>Results</a>
-  <a href="#accuracy" style="--i:4"><small>05</small>Capabilities</a>
-  <a href="#principle" style="--i:5"><small>06</small>Principle</a>
-  <a href="#download" style="--i:6"><small>07</small>Download</a>
-  <a href="#team" style="--i:7"><small>08</small>Team</a>
+  <a href="#video" style="--i:1"><small>02</small>Video</a>
+  <a href="#pipeline" style="--i:2"><small>03</small>Pipeline</a>
+  <a href="#console" style="--i:3"><small>04</small>Console</a>
+  <a href="#results" style="--i:4"><small>05</small>Results</a>
+  <a href="#accuracy" style="--i:5"><small>06</small>Capabilities</a>
+  <a href="#principle" style="--i:6"><small>07</small>Principle</a>
+  <a href="#download" style="--i:7"><small>08</small>Download</a>
+  <a href="#team" style="--i:8"><small>09</small>Team</a>
 </div>
 
 <main>
@@ -800,6 +851,31 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
   <div class="hero-stage">
     <canvas id="heroCv" aria-label="A dense point cloud of a house in snow, reconstructed from video. Drag to orbit." role="img"></canvas>
     <p class="hud" style="right:var(--gutter);bottom:14px">Drag to orbit</p>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="sec stage video" id="video" data-name="Video">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="vid-head">
+      <div style="display:grid;gap:14px">
+        <p class="label eyebrow" data-rv>The film</p>
+        <h2 class="h2" data-rv>Watch it work.</h2>
+      </div>
+      <p class="vid-meta label" data-rv><span>3:11</span><span>ODAX &amp; Co.</span><span>YouTube</span></p>
+    </div>
+    <a class="vid-card" href="https://youtu.be/u2LgsmQYgJs" target="_blank" rel="noopener" data-rv
+       aria-label="Watch the Sudarshana Vyuha product video on YouTube (3 minutes 11 seconds, opens in a new tab)">
+      <img src="assets/video-poster.jpg" alt="" width="1280" height="720" decoding="async">
+      <span class="vid-shade" aria-hidden="true"></span>
+      <span class="vid-play" aria-hidden="true"><i></i><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+      <span class="vid-cap">
+        <b>Video to 3D building model, fully offline</b>
+        <span>From raw footage to a measured model and floor plan, start to finish.</span>
+      </span>
+      <span class="vid-go" aria-hidden="true">Watch on YouTube <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></span>
+    </a>
   </div>
 </section>
 
@@ -1078,7 +1154,7 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
     <p class="foot-deva" lang="hi">सुदर्शन व्यूह</p>
     <div class="foot-row">
       <span>Sudarshana Vyuha · Team ODAX</span>
-      <nav aria-label="Footer"><a href="#overview">Overview</a><a href="#pipeline">Pipeline</a><a href="#console">Console</a><a href="#results">Results</a><a href="#accuracy">Capabilities</a><a href="#download">Download</a></nav>
+      <nav aria-label="Footer"><a href="#overview">Overview</a><a href="#video">Video</a><a href="#pipeline">Pipeline</a><a href="#console">Console</a><a href="#results">Results</a><a href="#accuracy">Capabilities</a><a href="#download">Download</a></nav>
     </div>
   </div>
 </footer>

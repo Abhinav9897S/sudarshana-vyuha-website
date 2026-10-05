@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://sudarshana-vyuha.onrender.com/</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image><image:loc>https://sudarshana-vyuha.onrender.com/assets/og-image.png</image:loc></image:image>
+    <video:video>
+      <video:thumbnail_loc>https://sudarshana-vyuha.onrender.com/assets/video-poster.jpg</video:thumbnail_loc>
+      <video:title>Sudarshana Vyuha | Video to 3D Building Model, Fully Offline</video:title>
+      <video:description>Raw drone and body-cam footage into a measured 3D building model and floor plan, fully offline.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/u2LgsmQYgJs</video:player_loc>
+      <video:duration>191</video:duration>
+      <video:publication_date>2026-09-27T07:44:42-07:00</video:publication_date>
+    </video:video>
   </url>
   <url>
     <loc>https://sudarshana-vyuha.onrender.com/access.html</loc>
