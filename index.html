@@ -352,7 +352,7 @@ html.ld-done :is(.hero .hud){transition:opacity .9s ease .5s}
 
 
 /* ---------- video ---------- */
-.video{position:relative;overflow:clip;padding-top:clamp(64px,10vh,120px)}
+.video{position:relative;overflow:clip}
 .video .wrap{position:relative;z-index:2}
 .vid-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;margin-bottom:clamp(24px,3.5vw,40px)}
 .vid-meta{display:flex;gap:10px 22px;flex-wrap:wrap;color:var(--stage-ink-3)}
@@ -809,13 +809,13 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
     <nav class="links" id="links" aria-label="Sections">
       <span class="pill" id="pill" aria-hidden="true"></span>
       <a href="#overview" style="--i:0">Overview</a>
-      <a href="#video" style="--i:1">Video</a>
-      <a href="#pipeline" style="--i:2">Pipeline</a>
-      <a href="#console" style="--i:3">Console</a>
-      <a href="#results" style="--i:4">Results</a>
-      <a href="#accuracy" style="--i:5">Capabilities</a>
-      <a href="#principle" style="--i:6">Principle</a>
-      <a href="#download" style="--i:7">Download</a>
+      <a href="#pipeline" style="--i:1">Pipeline</a>
+      <a href="#console" style="--i:2">Console</a>
+      <a href="#results" style="--i:3">Results</a>
+      <a href="#accuracy" style="--i:4">Capabilities</a>
+      <a href="#principle" style="--i:5">Principle</a>
+      <a href="#download" style="--i:6">Download</a>
+      <a href="#video" style="--i:7">Video</a>
       <a href="#team" style="--i:8">Team</a>
     </nav>
     <a class="nav-cta" href="#console">Run a mission</a>
@@ -826,13 +826,13 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
 
 <div class="sheet" id="sheet" inert>
   <a href="#overview" style="--i:0"><small>01</small>Overview</a>
-  <a href="#video" style="--i:1"><small>02</small>Video</a>
-  <a href="#pipeline" style="--i:2"><small>03</small>Pipeline</a>
-  <a href="#console" style="--i:3"><small>04</small>Console</a>
-  <a href="#results" style="--i:4"><small>05</small>Results</a>
-  <a href="#accuracy" style="--i:5"><small>06</small>Capabilities</a>
-  <a href="#principle" style="--i:6"><small>07</small>Principle</a>
-  <a href="#download" style="--i:7"><small>08</small>Download</a>
+  <a href="#pipeline" style="--i:1"><small>02</small>Pipeline</a>
+  <a href="#console" style="--i:2"><small>03</small>Console</a>
+  <a href="#results" style="--i:3"><small>04</small>Results</a>
+  <a href="#accuracy" style="--i:4"><small>05</small>Capabilities</a>
+  <a href="#principle" style="--i:5"><small>06</small>Principle</a>
+  <a href="#download" style="--i:6"><small>07</small>Download</a>
+  <a href="#video" style="--i:7"><small>08</small>Video</a>
   <a href="#team" style="--i:8"><small>09</small>Team</a>
 </div>
 
@@ -851,31 +851,6 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
   <div class="hero-stage">
     <canvas id="heroCv" aria-label="A dense point cloud of a house in snow, reconstructed from video. Drag to orbit." role="img"></canvas>
     <p class="hud" style="right:var(--gutter);bottom:14px">Drag to orbit</p>
-  </div>
-</section>
-
-<!-- ============ VIDEO ============ -->
-<section class="sec stage video" id="video" data-name="Video">
-  <div class="grain" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="vid-head">
-      <div style="display:grid;gap:14px">
-        <p class="label eyebrow" data-rv>The film</p>
-        <h2 class="h2" data-rv>Watch it work.</h2>
-      </div>
-      <p class="vid-meta label" data-rv><span>3:11</span><span>ODAX &amp; Co.</span><span>YouTube</span></p>
-    </div>
-    <a class="vid-card" href="https://youtu.be/u2LgsmQYgJs" target="_blank" rel="noopener" data-rv
-       aria-label="Watch the Sudarshana Vyuha product video on YouTube (3 minutes 11 seconds, opens in a new tab)">
-      <img src="assets/video-poster.jpg" alt="" width="1280" height="720" decoding="async">
-      <span class="vid-shade" aria-hidden="true"></span>
-      <span class="vid-play" aria-hidden="true"><i></i><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-      <span class="vid-cap">
-        <b>Video to 3D building model, fully offline</b>
-        <span>From raw footage to a measured model and floor plan, start to finish.</span>
-      </span>
-      <span class="vid-go" aria-hidden="true">Watch on YouTube <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></span>
-    </a>
   </div>
 </section>
 
@@ -1119,6 +1094,31 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
   </div>
 </section>
 
+<!-- ============ VIDEO ============ -->
+<section class="sec stage video" id="video" data-name="Video">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="vid-head">
+      <div style="display:grid;gap:14px">
+        <p class="label eyebrow" data-rv>The film</p>
+        <h2 class="h2" data-rv>Watch it work.</h2>
+      </div>
+      <p class="vid-meta label" data-rv><span>3:11</span><span>ODAX &amp; Co.</span><span>YouTube</span></p>
+    </div>
+    <a class="vid-card" href="https://youtu.be/u2LgsmQYgJs" target="_blank" rel="noopener" data-rv
+       aria-label="Watch the Sudarshana Vyuha product video on YouTube (3 minutes 11 seconds, opens in a new tab)">
+      <img src="assets/video-poster.jpg" alt="" width="1280" height="720" decoding="async">
+      <span class="vid-shade" aria-hidden="true"></span>
+      <span class="vid-play" aria-hidden="true"><i></i><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+      <span class="vid-cap">
+        <b>Video to 3D building model, fully offline</b>
+        <span>From raw footage to a measured model and floor plan, start to finish.</span>
+      </span>
+      <span class="vid-go" aria-hidden="true">Watch on YouTube <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></span>
+    </a>
+  </div>
+</section>
+
 <!-- ============ FINALE ============ -->
 <section class="finale stage" id="team" data-name="Team">
   <div class="grain" aria-hidden="true"></div>
@@ -1154,7 +1154,7 @@ a.li-btn:hover .li-go{transform:translate(2px,-2px)}
     <p class="foot-deva" lang="hi">सुदर्शन व्यूह</p>
     <div class="foot-row">
       <span>Sudarshana Vyuha · Team ODAX</span>
-      <nav aria-label="Footer"><a href="#overview">Overview</a><a href="#video">Video</a><a href="#pipeline">Pipeline</a><a href="#console">Console</a><a href="#results">Results</a><a href="#accuracy">Capabilities</a><a href="#download">Download</a></nav>
+      <nav aria-label="Footer"><a href="#overview">Overview</a><a href="#pipeline">Pipeline</a><a href="#console">Console</a><a href="#results">Results</a><a href="#accuracy">Capabilities</a><a href="#download">Download</a><a href="#video">Video</a></nav>
     </div>
   </div>
 </footer>
